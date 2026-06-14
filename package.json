@@ -1,6 +1,6 @@
 {
   "name": "@insoutt/react-simple-form",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Build react dynamic forms using JSON format",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

@@ -31,7 +31,7 @@ function getValidation(validation?: string | FieldValidator, validator?: Validat
     }
     if(typeof validation === 'string') {
         if(typeof validator[validation] === 'undefined') {
-            console.error(`Validation '${validation}' does not exists in form validator object`);
+            console.warn(`Validation '${validation}' does not exists in form validator object`);
             return;
         }
 

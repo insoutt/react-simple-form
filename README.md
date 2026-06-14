@@ -9,8 +9,8 @@ react-simple-form is a component to build Forms in react in a simple way.
 Install react-simple-form with:
 
 ```bash
-  npm install react-simple-form
-  yarn add react-simple-form
+  npm install @insoutt/react-simple-form
+  yarn add @insoutt/react-simple-form
 ```
 
 
@@ -57,7 +57,7 @@ function App() {
                 submitButton: 'btn btn-secondary',
             }}
             hideClearButton
-            isLoading={loading}
+            isLoading={isLoading}
             onSubmit={onSubmit}
             fields={formSchema}
         />

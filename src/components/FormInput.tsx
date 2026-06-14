@@ -33,7 +33,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
             })
         }
 
-        setValue(name, auxValue);
+        setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
         if(! validateOnSubmit) {
             await trigger(name);
         }

@@ -40,8 +40,12 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
             }
         }
 
-        Promise.resolve(onSubmit?.(values))
-            .then(() => afterSubmit?.(values));
+        try {
+            await onSubmit?.(values);
+            await afterSubmit?.(values);
+        } catch (error) {
+            console.warn('onSubmit failed, afterSubmit skipped:', error);
+        }
 
     };
 

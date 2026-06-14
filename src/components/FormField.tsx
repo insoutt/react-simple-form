@@ -14,9 +14,9 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
 
     useEffect(() => {
         return () => {
-            unregister(props.label);
+            unregister(props.name);
         }
-    }, []);
+    }, [unregister, props.name]);
 
     const renderField = () => {
         switch (props.type) {

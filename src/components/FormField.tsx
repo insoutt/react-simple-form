@@ -26,7 +26,7 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
                         {...props}
                         options={props.options}
                         validation={props.validation}
-                        className={cn(classNames?.input || classNames?.field)}
+                        className={cn(classNames?.select || classNames?.input || classNames?.field)}
                         groupClassName={cn(classNames?.group)}
                         labelClassName={cn(classNames?.label)}
                         renderFields={(fieldProps) => <FormField<T> key={fieldProps.name} {...fieldProps}/>}

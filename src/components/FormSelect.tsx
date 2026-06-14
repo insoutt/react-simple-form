@@ -37,10 +37,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
                         className
                     })
                 } 
-                {...register(name, {required: {
-                    value: true,
-                    message: 'Obligatorio'
-                }, validate})} 
+                {...register(name, {validate})}
                 {...props}
             >
                 <option value="">N/A</option>

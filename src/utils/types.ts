@@ -2,10 +2,10 @@ import { DefaultValues, FieldValues, Path } from "react-hook-form";
 
 // Form
 export type Validator = Record<string, FieldValidator>;
-export type OnSubmit<T> = (values: T) => void;
+export type OnSubmit<T> = (values: T) => void | Promise<void>;
 export type OnClear = () => void;
 export type BeforeSubmit<T> = (values: T) => Promise<T | boolean>
-export type AfterSubmit<T> = (values: T) => void
+export type AfterSubmit<T> = (values: T) => void | Promise<void>
 export type Value = string | number;
 
 export interface FormProps<T extends FieldValues> {
@@ -38,8 +38,6 @@ export interface FormClassNames{
     clearButton?: string
 }
 
-type FormBaseFieldProps = {
-};
 // End Form
 
 // FormField
@@ -71,7 +69,7 @@ interface FieldBaseProps {
 
 type Fields<T extends FieldValues> = InputProps<T> | SelectProps<T>;
 
-export type FieldProps<T extends FieldValues> = FormBaseFieldProps & Fields<T>;
+export type FieldProps<T extends FieldValues> = Fields<T>;
 // End FormField
 
 // FormInput

@@ -11,13 +11,8 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
         defaultValues,
     });
 
-    const formValues = methods.watch();
-    const {isSubmitting} = methods.formState;
+    const {isSubmitting, isDirty} = methods.formState;
     const isFormBusy = isLoading || isSubmitting;
-
-    const isFormClear = () => {
-        return Object.values(formValues).every(value => !value);
-    };
 
     const formSubmit: SubmitHandler<T> = async (values: T) => {
         if(typeof beforeSubmit === 'function') {
@@ -75,8 +70,8 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
                             <button className={cn(classNames?.submitButton || 'btn btn-primary')} type="submit" disabled={isFormBusy}>
                                 {isFormBusy ? loadingText : submitText}
                             </button>
-                            {!hideClearButton && !isFormBusy && !isFormClear() && <>
-                                <button className={cn(classNames?.clearButton)} onClick={clear}>
+                            {!hideClearButton && !isFormBusy && isDirty && <>
+                                <button type="button" className={cn(classNames?.clearButton)} onClick={clear}>
                                     {clearText}
                                 </button>
                             </>}

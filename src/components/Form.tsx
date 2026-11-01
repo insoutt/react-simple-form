@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler, FormProvider, FieldValues } from "react-hook-form"
+import { useForm, useWatch, get, SubmitHandler, FormProvider, FieldValues } from "react-hook-form"
 import FormField from "./FormField";
 import { FormProps } from '../utils/types';
 import { cn } from '../utils/utils';
@@ -11,7 +11,16 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
         defaultValues,
     });
 
-    const {isSubmitting, isDirty} = methods.formState;
+    const {isSubmitting} = methods.formState;
+    // Compare registered values only, a field without default counts as clean while empty
+    const values = useWatch({ control: methods.control });
+    const isDirty = Object.keys(values).some(name => {
+        const defaultValue = get(methods.formState.defaultValues, name);
+        const value = values[name];
+        return typeof defaultValue === 'undefined'
+            ? !(value === undefined || value === null || value === false || value.length === 0)
+            : value !== defaultValue;
+    });
     const isFormBusy = isLoading || isSubmitting;
 
     const formSubmit: SubmitHandler<T> = async (values: T) => {

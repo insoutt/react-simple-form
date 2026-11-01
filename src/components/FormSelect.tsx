@@ -12,7 +12,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
     
     const validate = async (value: string | number) => {
         setValidating(true);
-        const validationResponse = await parseValidation(value, formState, validateOnSubmit, validation, validator);
+        const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);
         return validationResponse;
     };

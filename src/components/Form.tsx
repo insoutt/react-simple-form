@@ -24,10 +24,8 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
                     values = before;
                 }
             } catch (error) {
-                if(error instanceof Error) {
-                    throw new Error('Before submit fails, reason: ' + error?.message)
-                }
-                throw new Error('beforeSubmit fails')
+                console.warn('beforeSubmit failed, onSubmit skipped:', error);
+                return;
             }
         }
 

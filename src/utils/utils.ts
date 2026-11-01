@@ -18,7 +18,12 @@ export async function parseValidation<T extends FieldValues>(value: string | num
         return true;
     }
 
-    return Promise.resolve(fn(value));
+    try {
+        return await fn(value);
+    } catch (error) {
+        console.warn('Validation failed:', error);
+        return false;
+    }
 }
 
 function getValidation(validation?: string | FieldValidator, validator?: Validator): FieldValidator | undefined {

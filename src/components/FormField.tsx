@@ -14,7 +14,7 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
 
     useEffect(() => {
         return () => {
-            unregister(props.name);
+            unregister(props.name, { keepDefaultValue: true });
         }
     }, [unregister, props.name]);
 

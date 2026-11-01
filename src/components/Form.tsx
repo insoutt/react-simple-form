@@ -24,6 +24,15 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
     const isFormBusy = isLoading || isSubmitting;
 
     const formSubmit: SubmitHandler<T> = async (values: T) => {
+        if(validateOnSubmit) {
+            // Call validation when validateOnSubmit is true
+            const isValid = await methods.trigger();
+
+            if (!isValid) {
+                return;
+            }
+        }
+
         if(typeof beforeSubmit === 'function') {
             try {
                 const before = await beforeSubmit(values);
@@ -34,15 +43,6 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
                 }
             } catch (error) {
                 console.warn('beforeSubmit failed, onSubmit skipped:', error);
-                return;
-            }
-        }
-
-        if(validateOnSubmit) {
-            // Call validation when validateOnSubmit is true
-            const isValid = await methods.trigger();
-
-            if (!isValid) {
                 return;
             }
         }

@@ -42,3 +42,21 @@ test('a file input keeps its selection and submits the selected files', async ()
     expect(avatar[0]).toBe(file);
     expect(input.files?.[0]).toBe(file);
 });
+
+test.each(['preprocessor', 'preprocessors'] as const)('a checkbox %s receives the checked boolean and its result is stored', async (via) => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const preprocessor = vi.fn((value: unknown) => value) as any;
+    render(<Form
+        fields={[{ name: 'agree', type: 'checkbox', label: 'Agree', ...(via === 'preprocessor' ? { preprocessor } : {}) }]}
+        preprocessors={via === 'preprocessors' ? { agree: preprocessor } : undefined}
+        onSubmit={onSubmit}
+        submitText="Send"
+    />);
+
+    await user.click(screen.getByLabelText('Agree'));
+    expect(preprocessor).toHaveBeenLastCalledWith(true, expect.anything());
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ agree: true }));
+});

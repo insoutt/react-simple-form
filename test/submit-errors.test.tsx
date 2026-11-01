@@ -59,3 +59,30 @@ test.each([false, true])('a rejecting async validator does not leave the form st
     expect(onSubmit).not.toHaveBeenCalled();
     warn.mockRestore();
 });
+
+test('afterSubmit throwing logs its own warning and keeps the onSubmit result', async () => {
+    const user = userEvent.setup();
+    const results: string[] = [];
+    const onSubmit = vi.fn(async (values: { name: string }) => { results.push(values.name); });
+    const error = new Error('boom');
+    const afterSubmit = vi.fn(async () => { throw error; });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    render(<Form
+        fields={[{ name: 'name', type: 'text', label: 'Name' }]}
+        defaultValues={{ name: 'John' }}
+        onSubmit={onSubmit}
+        afterSubmit={afterSubmit}
+        submitText="Send"
+        loadingText="Sending"
+    />);
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(afterSubmit).toHaveBeenCalled());
+
+    await expectFormUsable();
+    expect(results).toEqual(['John']);
+    expect(warn).toHaveBeenCalledWith('afterSubmit failed:', error);
+    expect(warn).not.toHaveBeenCalledWith('onSubmit failed, afterSubmit skipped:', error);
+    warn.mockRestore();
+});

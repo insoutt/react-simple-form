@@ -29,7 +29,6 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
         <div className={cn(groupClassName || 'form-group')}>
             <label className={labelClassName || 'form-label'} htmlFor={name}>{label}</label>
             <select id={name} 
-                disabled={isLoading || formState.isSubmitting}
                 className={getFieldClassname(name, {
                         formState, 
                         isValidating,
@@ -39,6 +38,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
                 } 
                 {...register(name, {validate})}
                 {...props}
+                disabled={isLoading || formState.isSubmitting || props?.disabled}
             >
                 <option value="">N/A</option>
                 {options.map(option => <option key={option.value} value={option.value}>{option.text}</option>)}

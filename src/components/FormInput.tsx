@@ -50,7 +50,6 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         {label && <label className={labelClassName || 'form-label'} htmlFor={name}>{label}</label>}
         <input id={name}
             type={type}
-            disabled={isLoading || formState.isSubmitting}
             {...registration}
             onChange={handleInputChange}
             className={getFieldClassname(name, {
@@ -61,6 +60,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
                 })
             }
             {...props}
+            disabled={isLoading || formState.isSubmitting || props?.disabled}
         />
         {children}
     </div>

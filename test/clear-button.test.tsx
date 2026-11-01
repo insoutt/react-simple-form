@@ -62,3 +62,24 @@ test('Clear hides again with partial defaults once a select sub-field is emptied
     await user.type(screen.getByLabelText('Name'), '{Backspace}');
     await waitFor(() => expect(clearButton()).toBeNull());
 });
+
+test('a number value without default counts as dirty and an untouched file input counts as clean', async () => {
+    const user = userEvent.setup();
+    render(<Form
+        fields={[
+            { name: 'avatar', type: 'file', label: 'Avatar' },
+            { name: 'name', type: 'text', label: 'Name' },
+            { name: 'amount', type: 'text', label: 'Amount', preprocessor: (value) => Number(value) },
+        ]}
+        clearText="Clear"
+    />);
+
+    expect(clearButton()).toBeNull();
+    await user.type(screen.getByLabelText('Name'), 'a');
+    expect(clearButton()).not.toBeNull();
+    await user.clear(screen.getByLabelText('Name'));
+    await waitFor(() => expect(clearButton()).toBeNull());
+
+    await user.type(screen.getByLabelText('Amount'), '0');
+    expect(clearButton()).not.toBeNull();
+});

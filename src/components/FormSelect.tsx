@@ -18,7 +18,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
     };
 
     const renderInputs = () => {
-        const option = options.find(item => item.value === selectedValue);
+        const option = options.find(item => String(item.value) === String(selectedValue));
 
         if(!option?.fields || typeof renderFields !== 'function') return;
 

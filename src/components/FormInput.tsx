@@ -17,9 +17,11 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         return validationResponse;
     };
 
+    const { onChange, ...registration } = register(name, { validate });
+
     const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        let auxValue: string | number = value;
+        const { name, value, checked } = event.target;
+        let auxValue: string | number | boolean = type === 'checkbox' ? checked : value;
 
         if(typeof preprocessor === 'function') {
             auxValue = preprocessor(value, {
@@ -33,7 +35,12 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
             })
         }
 
-        setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
+        if(type === 'file') {
+            // setValue would clear the file selection, RHF's onChange stores `files` instead
+            await onChange(event);
+        } else {
+            setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
+        }
         if(! validateOnSubmit) {
             await trigger(name);
         }
@@ -44,7 +51,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         <input id={name}
             type={type}
             disabled={isLoading || formState.isSubmitting}
-            {...register(name, { validate })}
+            {...registration}
             onChange={handleInputChange}
             className={getFieldClassname(name, {
                     formState,

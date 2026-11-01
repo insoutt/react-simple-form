@@ -1,0 +1,44 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { expect, test, vi } from 'vitest';
+import { Form } from '../src';
+
+test('a checkbox toggles on and off and submits a boolean', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<Form fields={[{ name: 'agree', type: 'checkbox', label: 'Agree' }]} onSubmit={onSubmit} submitText="Send"/>);
+
+    const checkbox = screen.getByLabelText('Agree') as HTMLInputElement;
+    await user.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+    await user.click(checkbox);
+    expect(checkbox.checked).toBe(false);
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][0]).toEqual({ agree: false });
+
+    await user.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+    expect(onSubmit.mock.calls[1][0]).toEqual({ agree: true });
+});
+
+test('a file input keeps its selection and submits the selected files', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<Form fields={[{ name: 'avatar', type: 'file', label: 'Avatar' }]} onSubmit={onSubmit} submitText="Send"/>);
+
+    const input = screen.getByLabelText('Avatar') as HTMLInputElement;
+    const file = new File(['png'], 'x.png', { type: 'image/png' });
+    await user.upload(input, file);
+    expect(input.files?.[0]).toBe(file);
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    const avatar = onSubmit.mock.calls[0][0].avatar;
+    expect(typeof avatar).not.toBe('string');
+    expect(avatar[0]).toBe(file);
+    expect(input.files?.[0]).toBe(file);
+});

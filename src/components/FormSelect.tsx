@@ -11,6 +11,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
     const selectedValue = watch(name);
     
     const validate = async (value: string | number) => {
+        if(props?.disabled) return true;
         setValidating(true);
         const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);

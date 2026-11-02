@@ -20,12 +20,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   because the select watches its own value.
 - Validators always run when react-hook-form validates instead of skipping
   themselves outside a submit. With `validateOnSubmit`, typing still triggers no
-  validation before the first submit. After a failed `validateOnSubmit`
-  submit, every field revalidates on change (previously any change cleared a
+  validation before the first submit. After any `validateOnSubmit` submit,
+  failed or successful, every field revalidates on change until the form is
+  cleared (previously any change cleared a
   `select` or `file` error, even to an invalid value, while other inputs kept
   their error until the next submit).
 - A field whose `props` set `disabled: false` is now still disabled while the
   form is loading or submitting.
+- Fields disabled through the schema's `props.disabled` are now skipped by
+  validation, and their default values are still submitted. Fields disabled
+  only while the form is loading or submitting are still validated.
 - Checkboxes no longer call `preprocessor` or `preprocessors[name]` and store
   their checked boolean as-is. Previously the preprocessor received the input's
   `value` (`"on"`) and its result was stored as the field value.

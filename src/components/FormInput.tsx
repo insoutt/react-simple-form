@@ -11,6 +11,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
     const [isValidating, setValidating] = useState(false);
 
     const validate = async (value: string | number) => {
+        if(props?.disabled) return true;
         setValidating(true);
         const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);

@@ -32,3 +32,32 @@ test.each([{ disabled: false }, undefined])('a required field mounted while load
     await waitFor(() => expect(screen.getByRole('alert').textContent).toBe('Required'));
     expect(onSubmit).not.toHaveBeenCalled();
 });
+
+test.each([false, true])('fields disabled through props skip validation and submit without their value (validateOnSubmit: %s)', async (validateOnSubmit) => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<Form fields={[
+        { name: 'x', type: 'text', label: 'X', props: { disabled: true }, validation: (v) => !!v || 'Required' },
+        { name: 's', type: 'select', label: 'S', options: [{ value: 'a', text: 'A' }], props: { disabled: true }, validation: (v) => !!v || 'Required' },
+        { name: 'c', type: 'checkbox', label: 'C', props: { disabled: true }, validation: (v) => (v as unknown) === true || 'Must check' },
+        { name: 'y', type: 'text', label: 'Y' },
+    ]} validateOnSubmit={validateOnSubmit} onSubmit={onSubmit} submitText="Send"/>);
+
+    await user.type(screen.getByLabelText('Y'), 'q');
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(onSubmit.mock.calls[0][0]).toStrictEqual({ x: undefined, s: undefined, c: undefined, y: 'q' });
+});
+
+test('a field disabled through props still submits its default value', async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<Form fields={[{ name: 'x', type: 'text', label: 'X', props: { disabled: true }, validation: (v) => !!v || 'Required' }]} defaultValues={{ x: 'd' }} onSubmit={onSubmit} submitText="Send"/>);
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toMatchObject({ x: 'd' });
+});

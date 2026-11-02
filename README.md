@@ -24,64 +24,69 @@ Peer dependencies: `react`, `react-dom`, `react-hook-form`.
 ## Quick start
 
 ```tsx
-import { FieldProps, Form } from "@insoutt/react-simple-form";
-import { useState } from "react";
+import { FieldProps, Form } from '@insoutt/react-simple-form';
+import { useState } from 'react';
 
 interface IForm {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 function required(value: string | number) {
-    return value.toString().length > 0 || "Required field";
+  return value.toString().length > 0 || 'Required field';
 }
 
 const formSchema: FieldProps<IForm>[] = [
-    { name: "email", type: "email", label: "E-mail", validation: required },
-    { name: "password", type: "password", label: "Password", validation: required },
+  { name: 'email', type: 'email', label: 'E-mail', validation: required },
+  {
+    name: 'password',
+    type: 'password',
+    label: 'Password',
+    validation: required,
+  },
 ];
 
 function App() {
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = async ({ email, password }: IForm) => {
-        setIsLoading(true);
-        // ...submit logic
-        setIsLoading(false);
-    };
+  const onSubmit = async ({ email, password }: IForm) => {
+    setIsLoading(true);
+    // ...submit logic
+    setIsLoading(false);
+  };
 
-    return (
-        <Form<IForm>
-            fields={formSchema}
-            isLoading={isLoading}
-            onSubmit={onSubmit}
-            classNames={{ submitButton: "btn btn-primary" }}
-        />
-    );
+  return (
+    <Form<IForm>
+      fields={formSchema}
+      isLoading={isLoading}
+      onSubmit={onSubmit}
+      classNames={{ submitButton: 'btn btn-primary' }}
+    />
+  );
 }
 ```
 
 ## `<Form>` props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `fields` | `FieldProps<T>[]` | **Required.** The form schema. |
-| `onSubmit` | `(values: T) => void \| Promise<void>` | Called with valid values on submit. |
-| `onClear` | `() => void` | Called when the clear button resets the form. |
-| `beforeSubmit` | `(values: T) => Promise<T \| boolean>` | Runs before `onSubmit`. Return `false` to cancel, `true` to keep values, or a new object to replace them. |
-| `afterSubmit` | `(values: T) => void \| Promise<void>` | Runs after `onSubmit` resolves. Skipped if `onSubmit` throws. |
-| `validator` | `Record<string, (value) => boolean \| string \| Promise<...>>` | Named validators referenced by string from a field's `validation`. |
-| `validateOnSubmit` | `boolean` | When `true`, fields don't validate on change until the first submit. After a submit, every field revalidates on change until the form is cleared. |
-| `preprocessors` | `Record<string, Preprocessor>` | Form-level value transformers keyed by field name. |
-| `defaultValues` | `DefaultValues<T>` | Initial form values. |
-| `isLoading` | `boolean` | Disables inputs and the submit button while truthy. |
-| `loadingText` | `string` | Submit button text while busy. Defaults to `submitText`. |
-| `submitText` | `string` | Submit button text. Default `"Submit"`. |
-| `clearText` | `string` | Clear button text. Default `"Clear"`. |
-| `hideClearButton` | `boolean` | Hides the clear button. |
-| `className` | `string` | Class for the `<form>` element. |
-| `classNames` | `FormClassNames` | Per-part class overrides (see below). |
-| `children` | `ReactNode \| (submit, clear) => ReactElement` | Replaces the default action buttons. |
+| Prop               | Type                                                           | Description                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields`           | `FieldProps<T>[]`                                              | **Required.** The form schema.                                                                                                                    |
+| `onSubmit`         | `(values: T) => void \| Promise<void>`                         | Called with valid values on submit.                                                                                                               |
+| `onClear`          | `() => void`                                                   | Called when the clear button resets the form.                                                                                                     |
+| `beforeSubmit`     | `(values: T) => Promise<T \| boolean>`                         | Runs before `onSubmit`. Return `false` to cancel, `true` to keep values, or a new object to replace them.                                         |
+| `afterSubmit`      | `(values: T) => void \| Promise<void>`                         | Runs after `onSubmit` resolves. Skipped if `onSubmit` throws.                                                                                     |
+| `validator`        | `Record<string, (value) => boolean \| string \| Promise<...>>` | Named validators referenced by string from a field's `validation`.                                                                                |
+| `validateOnSubmit` | `boolean`                                                      | When `true`, fields don't validate on change until the first submit. After a submit, every field revalidates on change until the form is cleared. |
+| `preprocessors`    | `Record<string, Preprocessor>`                                 | Form-level value transformers keyed by field name.                                                                                                |
+| `defaultValues`    | `DefaultValues<T>`                                             | Initial form values.                                                                                                                              |
+| `isLoading`        | `boolean`                                                      | Disables inputs and the submit button while truthy.                                                                                               |
+| `loadingText`      | `string`                                                       | Submit button text while busy. Defaults to `submitText`.                                                                                          |
+| `submitText`       | `string`                                                       | Submit button text. Default `"Submit"`.                                                                                                           |
+| `clearText`        | `string`                                                       | Clear button text. Default `"Clear"`.                                                                                                             |
+| `hideClearButton`  | `boolean`                                                      | Hides the clear button.                                                                                                                           |
+| `className`        | `string`                                                       | Class for the `<form>` element.                                                                                                                   |
+| `classNames`       | `FormClassNames`                                               | Per-part class overrides (see below).                                                                                                             |
+| `children`         | `ReactNode \| (submit, clear) => ReactElement`                 | Replaces the default action buttons.                                                                                                              |
 
 ## Field schema
 
@@ -130,16 +135,16 @@ A validator returns `true` when valid, or a `string` error message otherwise. It
 
 ```ts
 const required = (value: string | number) =>
-    value.toString().length > 0 || "Required field";
+  value.toString().length > 0 || 'Required field';
 ```
 
 Attach it inline (`validation: required`) or register named validators on the form and reference them by string:
 
 ```tsx
 <Form<IForm>
-    fields={[{ name: "email", type: "email", validation: "required" }]}
-    validator={{ required }}
-    onSubmit={onSubmit}
+  fields={[{ name: 'email', type: 'email', validation: 'required' }]}
+  validator={{ required }}
+  onSubmit={onSubmit}
 />
 ```
 
@@ -150,19 +155,19 @@ If a `validation` string has no match in `validator`, the field is treated as va
 A preprocessor transforms a field's value on every change, receiving the raw value and the cursor selection.
 
 ```ts
-import { Preprocessor } from "@insoutt/react-simple-form";
+import { Preprocessor } from '@insoutt/react-simple-form';
 
 const digitsOnly: Preprocessor = (value /*, { from, end } */) =>
-    value.toString().replace(/\D/g, "");
+  value.toString().replace(/\D/g, '');
 ```
 
 Apply per field (`preprocessor: digitsOnly`) or form-wide keyed by field name:
 
 ```tsx
 <Form<IForm>
-    fields={fields}
-    preprocessors={{ phone: digitsOnly }}
-    onSubmit={onSubmit}
+  fields={fields}
+  preprocessors={{ phone: digitsOnly }}
+  onSubmit={onSubmit}
 />
 ```
 
@@ -178,17 +183,17 @@ Override via `classNames`:
 
 ```tsx
 <Form<IForm>
-    fields={fields}
-    classNames={{
-        group: "mb-3",
-        label: "form-label",
-        select: "form-select",
-        input: "form-control",
-        field: "form-control",
-        submitButton: "btn btn-primary",
-        clearButton: "btn btn-link",
-    }}
-    onSubmit={onSubmit}
+  fields={fields}
+  classNames={{
+    group: 'mb-3',
+    label: 'form-label',
+    select: 'form-select',
+    input: 'form-control',
+    field: 'form-control',
+    submitButton: 'btn btn-primary',
+    clearButton: 'btn btn-link',
+  }}
+  onSubmit={onSubmit}
 />
 ```
 
@@ -200,12 +205,16 @@ Pass a function as `children` to render your own buttons with access to `submit`
 
 ```tsx
 <Form<IForm> fields={fields} onSubmit={onSubmit}>
-    {(submit, clear) => (
-        <div>
-            <button type="button" onClick={submit}>Save</button>
-            <button type="button" onClick={clear}>Reset</button>
-        </div>
-    )}
+  {(submit, clear) => (
+    <div>
+      <button type="button" onClick={submit}>
+        Save
+      </button>
+      <button type="button" onClick={clear}>
+        Reset
+      </button>
+    </div>
+  )}
 </Form>
 ```
 

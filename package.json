@@ -2,19 +2,21 @@
   "name": "@insoutt/react-simple-form",
   "version": "1.0.4",
   "description": "Build react dynamic forms using JSON format",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist",
-    "CHANGELOG.md"
+    "dist"
   ],
+  "type": "module",
   "scripts": {
-    "build": "yarn build:esm && yarn build:cjs",
-    "build:esm": "tsc",
-    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
-    "prepublishOnly": "yarn build",
-    "test": "vitest run"
+    "build": "tsc",
+    "ci": "yarn build && yarn check-format && yarn test",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "test": "vitest run",
+    "dev": "vitest",
+    "local-release": "changeset version && changeset publish",
+    "prepublishOnly": "npm run ci"
   },
   "keywords": [
     "form",
@@ -22,19 +24,27 @@
     "form builder",
     "typescript"
   ],
-  "author": "insoutt <elvis@betaksur.com>",
-  "license": "MIT",
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.49.2"
+  "homepage": "https://github.com/insoutt/react-simple-form",
+  "bugs": {
+    "url": "https://github.com/insoutt/react-simple-form/issues"
   },
+  "author": "insoutt <elvis@betaksur.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insoutt/react-simple-form.git"
+  },
+  "license": "MIT",
   "devDependencies": {
+    "@changesets/cli": "^2.28.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
     "@types/react": "^18.2.46",
     "jsdom": "^30.1.3",
+    "prettier": "^3.5.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.2",
     "typescript": "^5.3.3",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"

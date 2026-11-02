@@ -1,57 +1,82 @@
-import { useFormContext, FieldValues } from "react-hook-form"
-import { cn, getFieldClassname, parseValidation } from '../utils/utils';
-import { SelectProps } from "../utils/types";
-import { useContext, useState } from "react";
-import { SimpleFormContext } from "../contexts/simple-form-context";
+import { useFormContext, type FieldValues } from 'react-hook-form';
+import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
+import type { SelectProps } from '../utils/types.js';
+import { useContext, useState } from 'react';
+import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
-const FormSelect = <T extends FieldValues>({ label, name, options, validation, props, labelClassName, groupClassName, className, renderFields, children }: SelectProps<T>): JSX.Element => {
-    const { register, watch, formState } = useFormContext();
-    const {isLoading, validator, validateOnSubmit} = useContext(SimpleFormContext);
-    const [isValidating, setValidating] = useState(false);
-    const selectedValue = watch(name);
-    
-    const validate = async (value: string | number) => {
-        if(props?.disabled) return true;
-        // RHF can call validate while another field renders, so set state after a microtask
-        await Promise.resolve();
-        setValidating(true);
-        const validationResponse = await parseValidation(value, validation, validator);
-        setValidating(false);
-        return validationResponse;
-    };
+const FormSelect = <T extends FieldValues>({
+  label,
+  name,
+  options,
+  validation,
+  props,
+  labelClassName,
+  groupClassName,
+  className,
+  renderFields,
+  children,
+}: SelectProps<T>): JSX.Element => {
+  const { register, watch, formState } = useFormContext();
+  const { isLoading, validator, validateOnSubmit } =
+    useContext(SimpleFormContext);
+  const [isValidating, setValidating] = useState(false);
+  const selectedValue = watch(name);
 
-    const renderInputs = () => {
-        const option = options.find(item => String(item.value) === String(selectedValue));
+  const validate = async (value: string | number) => {
+    if (props?.disabled) return true;
+    // RHF can call validate while another field renders, so set state after a microtask
+    await Promise.resolve();
+    setValidating(true);
+    const validationResponse = await parseValidation(
+      value,
+      validation,
+      validator,
+    );
+    setValidating(false);
+    return validationResponse;
+  };
 
-        if(!option?.fields || typeof renderFields !== 'function') return;
+  const renderInputs = () => {
+    const option = options.find(
+      (item) => String(item.value) === String(selectedValue),
+    );
 
-        return option.fields.map(field => renderFields(field));
-    }
+    if (!option?.fields || typeof renderFields !== 'function') return;
 
-    return <>
-        <div className={cn(groupClassName || 'form-group')}>
-            <label className={labelClassName || 'form-label'} htmlFor={name}>{label}</label>
-            <select id={name} 
-                className={getFieldClassname(name, {
-                        formState, 
-                        isValidating,
-                        validateOnSubmit, 
-                        className
-                    })
-                } 
-                {...register(name, {validate})}
-                {...props}
-                disabled={isLoading || formState.isSubmitting || props?.disabled}
-            >
-                <option value="">N/A</option>
-                {options.map(option => <option key={option.value} value={option.value}>{option.text}</option>)}
-            </select>
-            {children}
-        </div>
-        
-        {renderInputs()}
+    return option.fields.map((field) => renderFields(field));
+  };
+
+  return (
+    <>
+      <div className={cn(groupClassName || 'form-group')}>
+        <label className={labelClassName || 'form-label'} htmlFor={name}>
+          {label}
+        </label>
+        <select
+          id={name}
+          className={getFieldClassname(name, {
+            formState,
+            isValidating,
+            validateOnSubmit,
+            className,
+          })}
+          {...register(name, { validate })}
+          {...props}
+          disabled={isLoading || formState.isSubmitting || props?.disabled}
+        >
+          <option value="">N/A</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.text}
+            </option>
+          ))}
+        </select>
+        {children}
+      </div>
+
+      {renderInputs()}
     </>
-}
-
+  );
+};
 
 export default FormSelect;

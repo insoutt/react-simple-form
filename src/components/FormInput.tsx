@@ -6,7 +6,7 @@ import { SimpleFormContext } from "../contexts/simple-form-context";
 
 
 const FormInput = <T extends FieldValues>({ label, name, type, className, validation, props, groupClassName, labelClassName, children, preprocessor }: InputProps<T>): JSX.Element => {
-    const { register, formState, setValue, trigger } = useFormContext();
+    const { register, formState, setValue, trigger, control } = useFormContext();
     const {isLoading, validator, validateOnSubmit, preprocessors} = useContext(SimpleFormContext);
     const [isValidating, setValidating] = useState(false);
 
@@ -41,7 +41,8 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         } else {
             setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
         }
-        if(! validateOnSubmit) {
+        // control._formState is current at call time, like the isSubmitted RHF's own onChange reads
+        if(! validateOnSubmit || control._formState.isSubmitted) {
             await trigger(name);
         }
     };

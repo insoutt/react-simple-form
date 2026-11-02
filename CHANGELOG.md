@@ -18,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validators always run when react-hook-form validates instead of skipping
   themselves outside a submit. With `validateOnSubmit`, typing still triggers no
   validation before the first submit. After a failed `validateOnSubmit`
-  submit, `select` and `file` fields revalidate on change (previously any change
-  cleared their error, even to an invalid value), while other inputs keep their
-  error until the next submit.
+  submit, every field revalidates on change (previously any change cleared a
+  `select` or `file` error, even to an invalid value, while other inputs kept
+  their error until the next submit).
 - A field whose `props` set `disabled: false` is now still disabled while the
   form is loading or submitting.
 - Checkbox preprocessors now receive the checked boolean instead of the input's

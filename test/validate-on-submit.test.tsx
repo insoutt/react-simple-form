@@ -68,23 +68,29 @@ test('under validateOnSubmit typing before the first submit runs no validator an
     expect(screen.queryByRole('alert')).toBeNull();
 });
 
-test('after a failed validateOnSubmit submit a text field keeps its error until the next submit and a select revalidates on change', async () => {
+test('after a failed validateOnSubmit submit every field revalidates on change', async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<Form fields={[
         { name: 'x', type: 'text', label: 'X', validation: required },
+        { name: 'z', type: 'checkbox', label: 'Z', validation: (value) => value === true || 'Must be checked' },
         { name: 'y', type: 'select', label: 'Y', validation: required, options: [{ value: 'a', text: 'A' }] },
     ]} validateOnSubmit onSubmit={onSubmit} submitText="Send"/>);
     const alertOf = (label: string) => within(screen.getByLabelText(label).parentElement!).queryByRole('alert');
 
     await user.click(screen.getByRole('button', { name: 'Send' }));
-    await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(2));
+    await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(3));
 
     await user.type(screen.getByLabelText('X'), 'a');
+    await waitFor(() => expect(alertOf('X')).toBeNull());
+    await user.clear(screen.getByLabelText('X'));
+    await waitFor(() => expect(alertOf('X')?.textContent).toBe('Required field'));
+
+    await user.click(screen.getByLabelText('Z'));
+    await waitFor(() => expect(alertOf('Z')).toBeNull());
+
     await user.selectOptions(screen.getByLabelText('Y'), 'a');
     await waitFor(() => expect(alertOf('Y')).toBeNull());
-    expect(alertOf('X')?.textContent).toBe('Required field');
-
     await user.selectOptions(screen.getByLabelText('Y'), '');
     await waitFor(() => expect(alertOf('Y')?.textContent).toBe('Required field'));
     expect(onSubmit).not.toHaveBeenCalled();

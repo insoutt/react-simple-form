@@ -16,7 +16,7 @@
     "ci": "yarn build && yarn check-format && yarn check-exports && yarn test",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "check-exports": "attw --pack . --ignore-rules=named-exports",
     "test": "vitest run",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci"

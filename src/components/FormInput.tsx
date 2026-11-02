@@ -12,6 +12,8 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
 
     const validate = async (value: string | number) => {
         if(props?.disabled) return true;
+        // RHF can call validate while another field renders, so set state after a microtask
+        await Promise.resolve();
         setValidating(true);
         const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);

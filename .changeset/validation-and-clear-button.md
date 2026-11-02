@@ -25,4 +25,4 @@ Behavior changes:
 
 Packaging:
 
-- `CHANGELOG.md` is now included in the published package, and source maps inline their sources.
+- Source maps now inline their sources.

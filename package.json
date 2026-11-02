@@ -25,6 +25,10 @@
     "form builder",
     "typescript"
   ],
+  "homepage": "https://github.com/insoutt/react-simple-form",
+  "bugs": {
+    "url": "https://github.com/insoutt/react-simple-form/issues"
+  },
   "author": "insoutt <elvis@betaksur.com>",
   "repository": {
     "type": "git",

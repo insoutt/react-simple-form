@@ -1,14 +1,14 @@
 import {
   useForm,
-  SubmitHandler,
+  type SubmitHandler,
   FormProvider,
-  FieldValues,
+  type FieldValues,
 } from 'react-hook-form';
-import FormField from './FormField';
-import ClearButton from './ClearButton';
-import { FormProps } from '../utils/types';
-import { cn } from '../utils/utils';
-import { SimpleFormContext } from '../contexts/simple-form-context';
+import FormField from './FormField.js';
+import ClearButton from './ClearButton.js';
+import type { FormProps } from '../utils/types.js';
+import { cn } from '../utils/utils.js';
+import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const Form = <T extends FieldValues>({
   fields,

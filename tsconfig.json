@@ -1,20 +1,36 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
+    /* Base Options: */
     "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "lib": ["es5", "es2015", "es2016", "dom", "esnext"],
-    "module": "es2015",
-    "moduleResolution": "Node",
-    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
     "noUnusedLocals": true,
-    "outDir": "dist/esm",
+
+    /* If transpiling with TypeScript: */
+    "module": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
     "sourceMap": true,
     "inlineSources": true,
-    "strict": true,
-    "target": "es6"
+
+    /* AND if you're building for a library: */
+    "declaration": true,
+
+    /* AND if you're building for a library in a monorepo: */
+    "declarationMap": true,
+
+    /* React: */
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }

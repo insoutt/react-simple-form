@@ -1,4 +1,4 @@
-import { DefaultValues, FieldValues, Path } from 'react-hook-form';
+import type { DefaultValues, FieldValues, Path } from 'react-hook-form';
 
 // Form
 export type Validator = Record<string, FieldValidator>;
@@ -117,4 +117,4 @@ export type SelectOption<T extends FieldValues> = {
 };
 // End FormSelect
 
-export { FieldValues };
+export type { FieldValues };

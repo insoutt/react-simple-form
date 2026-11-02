@@ -1,10 +1,10 @@
-import FormInput from './FormInput';
-import FormSelect from './FormSelect';
-import { FieldValues, useFormContext } from 'react-hook-form';
+import FormInput from './FormInput.js';
+import FormSelect from './FormSelect.js';
+import { type FieldValues, useFormContext } from 'react-hook-form';
 import { useContext, useEffect } from 'react';
-import { cn } from '../utils/utils';
-import { FieldProps } from '../utils/types';
-import { SimpleFormContext } from '../contexts/simple-form-context';
+import { cn } from '../utils/utils.js';
+import type { FieldProps } from '../utils/types.js';
+import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const FormField = <T extends FieldValues>(
   props: FieldProps<T>,

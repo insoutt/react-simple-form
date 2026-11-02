@@ -2,21 +2,19 @@
   "name": "@insoutt/react-simple-form",
   "version": "1.0.4",
   "description": "Build react dynamic forms using JSON format",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
+  "type": "module",
   "scripts": {
-    "build": "yarn build:esm && yarn build:cjs",
-    "build:esm": "tsc",
-    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
+    "build": "tsc",
     "ci": "yarn build && yarn check-format && yarn check-exports && yarn test",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "check-exports": "attw --pack . --ignore-rules=named-exports",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci"

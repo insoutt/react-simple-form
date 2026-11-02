@@ -1,5 +1,5 @@
 import { useFormContext, useWatch, get } from 'react-hook-form';
-import { cn } from '../utils/utils';
+import { cn } from '../utils/utils.js';
 
 interface ClearButtonProps {
   className?: string;

@@ -1,5 +1,9 @@
 import { createContext } from 'react';
-import { FormClassNames, Preprocessor, Validator } from '../utils';
+import type {
+  FormClassNames,
+  Preprocessor,
+  Validator,
+} from '../utils/index.js';
 
 interface SimpleFormContextInterface {
   isLoading: boolean;

@@ -1,5 +1,5 @@
-import { FieldValues, FormState, Path } from 'react-hook-form';
-import { FieldValidator, Validator } from './types';
+import type { FieldValues, FormState, Path } from 'react-hook-form';
+import type { FieldValidator, Validator } from './types.js';
 
 export function cn(...args: Array<string | undefined>): string {
   return args.filter(Boolean).join(' ').trim();

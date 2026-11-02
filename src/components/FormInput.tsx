@@ -1,8 +1,8 @@
-import { useFormContext, FieldValues } from 'react-hook-form';
-import { cn, getFieldClassname, parseValidation } from '../utils/utils';
-import { InputProps } from '../utils/types';
-import { ChangeEvent, useContext, useState } from 'react';
-import { SimpleFormContext } from '../contexts/simple-form-context';
+import { useFormContext, type FieldValues } from 'react-hook-form';
+import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
+import type { InputProps } from '../utils/types.js';
+import { type ChangeEvent, useContext, useState } from 'react';
+import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const FormInput = <T extends FieldValues>({
   label,
@@ -53,7 +53,7 @@ const FormInput = <T extends FieldValues>({
       typeof preprocessors !== 'undefined' &&
       typeof preprocessors[name] === 'function'
     ) {
-      auxValue = preprocessors[name](value, {
+      auxValue = preprocessors[name]!(value, {
         from: event.target.selectionStart,
         end: event.target.selectionEnd,
       });

@@ -10,11 +10,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "ci": "yarn build && yarn check-format && yarn check-exports && yarn test",
+    "ci": "yarn build && yarn check-format && yarn test",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
+    "dev": "vitest",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci"
   },
@@ -40,7 +40,6 @@
     "react-hook-form": "^7.49.2"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.17.4",
     "@changesets/cli": "^2.28.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

@@ -6,22 +6,29 @@ import { SimpleFormContext } from "../contexts/simple-form-context";
 
 
 const FormInput = <T extends FieldValues>({ label, name, type, className, validation, props, groupClassName, labelClassName, children, preprocessor }: InputProps<T>): JSX.Element => {
-    const { register, formState, setValue, trigger } = useFormContext();
+    const { register, formState, setValue, trigger, control } = useFormContext();
     const {isLoading, validator, validateOnSubmit, preprocessors} = useContext(SimpleFormContext);
     const [isValidating, setValidating] = useState(false);
 
     const validate = async (value: string | number) => {
+        if(props?.disabled) return true;
+        // RHF can call validate while another field renders, so set state after a microtask
+        await Promise.resolve();
         setValidating(true);
-        const validationResponse = await parseValidation(value, formState, validateOnSubmit, validation, validator);
+        const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);
         return validationResponse;
     };
 
-    const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        let auxValue: string | number = value;
+    const { onChange, ...registration } = register(name, { validate });
 
-        if(typeof preprocessor === 'function') {
+    const handleInputChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, checked } = event.target;
+        let auxValue: string | number | boolean = type === 'checkbox' ? checked : value;
+
+        if(type === 'checkbox') {
+            // Preprocessors take and return string | number, a checkbox stores its checked boolean as-is
+        } else if(typeof preprocessor === 'function') {
             auxValue = preprocessor(value, {
                 from: event.target.selectionStart,
                 end: event.target.selectionEnd,
@@ -33,8 +40,15 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
             })
         }
 
-        setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
-        if(! validateOnSubmit) {
+        if(type === 'file') {
+            // setValue would clear the file selection, RHF's onChange stores `files` instead
+            await onChange(event);
+        } else {
+            setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
+        }
+        // control._formState is current at call time, like the isSubmitted RHF's own onChange reads.
+        // After a submit, RHF's onChange already revalidates file inputs
+        if(control._formState.isSubmitted ? type !== 'file' : ! validateOnSubmit) {
             await trigger(name);
         }
     };
@@ -43,8 +57,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         {label && <label className={labelClassName || 'form-label'} htmlFor={name}>{label}</label>}
         <input id={name}
             type={type}
-            disabled={isLoading || formState.isSubmitting}
-            {...register(name, { validate })}
+            {...registration}
             onChange={handleInputChange}
             className={getFieldClassname(name, {
                     formState,
@@ -54,6 +67,7 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
                 })
             }
             {...props}
+            disabled={isLoading || formState.isSubmitting || props?.disabled}
         />
         {children}
     </div>

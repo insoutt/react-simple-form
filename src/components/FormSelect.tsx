@@ -11,14 +11,17 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
     const selectedValue = watch(name);
     
     const validate = async (value: string | number) => {
+        if(props?.disabled) return true;
+        // RHF can call validate while another field renders, so set state after a microtask
+        await Promise.resolve();
         setValidating(true);
-        const validationResponse = await parseValidation(value, formState, validateOnSubmit, validation, validator);
+        const validationResponse = await parseValidation(value, validation, validator);
         setValidating(false);
         return validationResponse;
     };
 
     const renderInputs = () => {
-        const option = options.find(item => item.value === selectedValue);
+        const option = options.find(item => String(item.value) === String(selectedValue));
 
         if(!option?.fields || typeof renderFields !== 'function') return;
 
@@ -29,7 +32,6 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
         <div className={cn(groupClassName || 'form-group')}>
             <label className={labelClassName || 'form-label'} htmlFor={name}>{label}</label>
             <select id={name} 
-                disabled={isLoading || formState.isSubmitting}
                 className={getFieldClassname(name, {
                         formState, 
                         isValidating,
@@ -39,6 +41,7 @@ const FormSelect = <T extends FieldValues>({ label, name, options, validation, p
                 } 
                 {...register(name, {validate})}
                 {...props}
+                disabled={isLoading || formState.isSubmitting || props?.disabled}
             >
                 <option value="">N/A</option>
                 {options.map(option => <option key={option.value} value={option.value}>{option.text}</option>)}

@@ -1,5 +1,6 @@
 import { useForm, SubmitHandler, FormProvider, FieldValues } from "react-hook-form"
 import FormField from "./FormField";
+import ClearButton from "./ClearButton";
 import { FormProps } from '../utils/types';
 import { cn } from '../utils/utils';
 import { SimpleFormContext } from "../contexts/simple-form-context";
@@ -11,7 +12,7 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
         defaultValues,
     });
 
-    const {isSubmitting, isDirty} = methods.formState;
+    const {isSubmitting} = methods.formState;
     const isFormBusy = isLoading || isSubmitting;
 
     const formSubmit: SubmitHandler<T> = async (values: T) => {
@@ -24,27 +25,22 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
                     values = before;
                 }
             } catch (error) {
-                if(error instanceof Error) {
-                    throw new Error('Before submit fails, reason: ' + error?.message)
-                }
-                throw new Error('beforeSubmit fails')
-            }
-        }
-
-        if(validateOnSubmit) {
-            // Call validation when validateOnSubmit is true
-            const isValid = await methods.trigger();
-
-            if (!isValid) {
+                console.warn('beforeSubmit failed, onSubmit skipped:', error);
                 return;
             }
         }
 
         try {
             await onSubmit?.(values);
-            await afterSubmit?.(values);
         } catch (error) {
             console.warn('onSubmit failed, afterSubmit skipped:', error);
+            return;
+        }
+
+        try {
+            await afterSubmit?.(values);
+        } catch (error) {
+            console.warn('afterSubmit failed:', error);
         }
 
     };
@@ -74,11 +70,9 @@ const Form = <T extends FieldValues>({fields, validator, beforeSubmit, afterSubm
                             <button className={cn(classNames?.submitButton || 'btn btn-primary')} type="submit" disabled={isFormBusy}>
                                 {isFormBusy ? loadingText : submitText}
                             </button>
-                            {!hideClearButton && !isFormBusy && isDirty && <>
-                                <button type="button" className={cn(classNames?.clearButton)} onClick={clear}>
-                                    {clearText}
-                                </button>
-                            </>}
+                            {!hideClearButton && !isFormBusy && <ClearButton className={classNames?.clearButton} onClick={clear}>
+                                {clearText}
+                            </ClearButton>}
                         </div>}
             </form>
         </FormProvider>

@@ -14,7 +14,7 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
 
     useEffect(() => {
         return () => {
-            unregister(props.name);
+            unregister(props.name, { keepDefaultValue: true });
         }
     }, [unregister, props.name]);
 
@@ -26,9 +26,9 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
                         {...props}
                         options={props.options}
                         validation={props.validation}
-                        className={cn(classNames?.select || classNames?.input || classNames?.field)}
-                        groupClassName={cn(classNames?.group)}
-                        labelClassName={cn(classNames?.label)}
+                        className={cn(props.className || classNames?.select || classNames?.input || classNames?.field)}
+                        groupClassName={cn(props.groupClassName || classNames?.group)}
+                        labelClassName={cn(props.labelClassName || classNames?.label)}
                         renderFields={(fieldProps) => <FormField<T> key={fieldProps.name} {...fieldProps}/>}
                     >
                         {renderChild()}
@@ -39,9 +39,9 @@ const FormField = <T extends FieldValues>(props: FieldProps<T>): JSX.Element => 
                     <FormInput<T>
                         {...props}
                         validation={props.validation}
-                        className={cn(classNames?.input || classNames?.field)}
-                        groupClassName={cn(classNames?.group)}
-                        labelClassName={cn(classNames?.label)}
+                        className={cn(props.className || classNames?.input || classNames?.field)}
+                        groupClassName={cn(props.groupClassName || classNames?.group)}
+                        labelClassName={cn(props.labelClassName || classNames?.label)}
                     >
                         {renderChild()}
                     </FormInput>

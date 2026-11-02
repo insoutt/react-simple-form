@@ -71,7 +71,7 @@ function App() {
 | `beforeSubmit` | `(values: T) => Promise<T \| boolean>` | Runs before `onSubmit`. Return `false` to cancel, `true` to keep values, or a new object to replace them. |
 | `afterSubmit` | `(values: T) => void \| Promise<void>` | Runs after `onSubmit` resolves. Skipped if `onSubmit` throws. |
 | `validator` | `Record<string, (value) => boolean \| string \| Promise<...>>` | Named validators referenced by string from a field's `validation`. |
-| `validateOnSubmit` | `boolean` | When `true`, fields validate only on submit instead of on change. |
+| `validateOnSubmit` | `boolean` | When `true`, fields don't validate on change until the first submit. After a submit, every field revalidates on change until the form is cleared. |
 | `preprocessors` | `Record<string, Preprocessor>` | Form-level value transformers keyed by field name. |
 | `defaultValues` | `DefaultValues<T>` | Initial form values. |
 | `isLoading` | `boolean` | Disables inputs and the submit button while truthy. |
@@ -167,6 +167,8 @@ Apply per field (`preprocessor: digitsOnly`) or form-wide keyed by field name:
 ```
 
 A field's own `preprocessor` takes precedence over the form-level `preprocessors` entry.
+
+Preprocessors don't apply to checkboxes, which store their checked boolean as-is.
 
 ## Styling
 

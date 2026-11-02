@@ -6,30 +6,28 @@ export function cn(...args: Array<string | undefined>): string {
     return args.filter(Boolean).join(' ').trim();
 }
 
-export async function parseValidation<T extends FieldValues>(value: string | number, formState: FormState<T>, validateOnSubmit: boolean, validation?: string | FieldValidator, validator?: Validator) {
-    if(typeof value === 'undefined') return;
-
-    // Valid field when updating, only check validation on submit form
-    if(validateOnSubmit && !formState.isSubmitting) return true;
-
+export async function parseValidation(value: string | number | undefined, validation?: string | FieldValidator, validator?: Validator) {
     const fn = getValidation(validation, validator);
 
     if(typeof fn === 'undefined') {
         return true;
     }
 
-    return Promise.resolve(fn(value));
+    try {
+        // RHF reads undefined for a control that was disabled when it registered, validate it as empty
+        return await fn(value ?? '');
+    } catch (error) {
+        console.warn('Validation failed:', error);
+        return false;
+    }
 }
 
 function getValidation(validation?: string | FieldValidator, validator?: Validator): FieldValidator | undefined {
     if(typeof validation === 'function') {
         return validation;
     }
-    if(typeof validator !== 'object' || validator === null) {
-        return;
-    }
     if(typeof validation === 'string') {
-        if(typeof validator[validation] === 'undefined') {
+        if(typeof validator !== 'object' || validator === null || typeof validator[validation] === 'undefined') {
             console.warn(`Validation '${validation}' does not exists in form validator object`);
             return;
         }

@@ -13,8 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   field without a default counts as clean while it is empty (`''`, `false`,
   `null`/`undefined` or an empty file selection). The button hides again once
   every field is back to its default or empty, instead of staying visible after
-  a field is cleared. The value watcher lives in the button itself, so typing
-  re-renders only the button, and nothing is watched with `hideClearButton`.
+  a field is cleared. The value watcher lives in the button itself, and
+  `hideClearButton` removes it. With `validateOnSubmit`, typing before the first
+  submit re-renders only the button. Otherwise the validation on each change
+  still re-renders the form and every field, and a `select` change always does
+  because the select watches its own value.
 - Validators always run when react-hook-form validates instead of skipping
   themselves outside a submit. With `validateOnSubmit`, typing still triggers no
   validation before the first submit. After a failed `validateOnSubmit`
@@ -23,8 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   their error until the next submit).
 - A field whose `props` set `disabled: false` is now still disabled while the
   form is loading or submitting.
-- Checkbox preprocessors now receive the checked boolean instead of the input's
-  `value` (`"on"`), and their result is stored as the field value.
+- Checkboxes no longer call `preprocessor` or `preprocessors[name]` and store
+  their checked boolean as-is. Previously the preprocessor received the input's
+  `value` (`"on"`) and its result was stored as the field value.
 - An error thrown by `afterSubmit` is now logged as `afterSubmit failed:`
   instead of being reported as an `onSubmit` failure.
 

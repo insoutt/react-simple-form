@@ -58,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `select` options with numeric values now show their sub-fields when selected.
 - A string `validation` on a form without a `validator` object now logs a
   warning (the field still counts as valid) instead of being silently ignored.
+- React no longer logs "Cannot update a component while rendering a different
+  component" when fields register, for example on mount under StrictMode.
 
 ### Packaging
 

@@ -43,10 +43,10 @@ test('a file input keeps its selection and submits the selected files', async ()
     expect(input.files?.[0]).toBe(file);
 });
 
-test.each(['preprocessor', 'preprocessors'] as const)('a checkbox %s receives the checked boolean and its result is stored', async (via) => {
+test.each(['preprocessor', 'preprocessors'] as const)('a checkbox never calls its %s and stores the checked boolean', async (via) => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    const preprocessor = vi.fn((value: unknown) => value) as any;
+    const preprocessor = vi.fn((value: string | number) => value);
     render(<Form
         fields={[{ name: 'agree', type: 'checkbox', label: 'Agree', ...(via === 'preprocessor' ? { preprocessor } : {}) }]}
         preprocessors={via === 'preprocessors' ? { agree: preprocessor } : undefined}
@@ -55,10 +55,27 @@ test.each(['preprocessor', 'preprocessors'] as const)('a checkbox %s receives th
     />);
 
     await user.click(screen.getByLabelText('Agree'));
-    expect(preprocessor).toHaveBeenLastCalledWith(true, expect.anything());
-
     await user.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ agree: true }));
+    expect(preprocessor).not.toHaveBeenCalled();
+});
+
+test.each(['preprocessor', 'preprocessors'] as const)('a text input still runs its %s and stores the result', async (via) => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const preprocessor = vi.fn((value: string | number) => value.toString().toUpperCase());
+    render(<Form
+        fields={[{ name: 'code', type: 'text', label: 'Code', ...(via === 'preprocessor' ? { preprocessor } : {}) }]}
+        preprocessors={via === 'preprocessors' ? { code: preprocessor } : undefined}
+        onSubmit={onSubmit}
+        submitText="Send"
+    />);
+
+    await user.type(screen.getByLabelText('Code'), 'a');
+    expect(preprocessor).toHaveBeenLastCalledWith('a', expect.anything());
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ code: 'A' }));
 });
 
 test('under validateOnSubmit a file change after a failed submit runs its validator once', async () => {

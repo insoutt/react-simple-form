@@ -1,6 +1,6 @@
 import { useFormContext, FieldValues } from "react-hook-form"
 import { cn, getFieldClassname, parseValidation } from "../utils/utils";
-import { InputProps, Value } from "../utils/types";
+import { InputProps } from "../utils/types";
 import { ChangeEvent, useContext, useState } from "react";
 import { SimpleFormContext } from "../contexts/simple-form-context";
 
@@ -23,13 +23,15 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         const { name, value, checked } = event.target;
         let auxValue: string | number | boolean = type === 'checkbox' ? checked : value;
 
-        if(typeof preprocessor === 'function') {
-            auxValue = preprocessor(auxValue as Value, {
+        if(type === 'checkbox') {
+            // Preprocessors take and return string | number, a checkbox stores its checked boolean as-is
+        } else if(typeof preprocessor === 'function') {
+            auxValue = preprocessor(value, {
                 from: event.target.selectionStart,
                 end: event.target.selectionEnd,
             });
         } else if(typeof preprocessors !== 'undefined' && typeof preprocessors[name] === 'function') {
-            auxValue = preprocessors[name](auxValue as Value, {
+            auxValue = preprocessors[name](value, {
                 from: event.target.selectionStart,
                 end: event.target.selectionEnd,
             })

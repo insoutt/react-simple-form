@@ -41,8 +41,9 @@ const FormInput = <T extends FieldValues>({ label, name, type, className, valida
         } else {
             setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
         }
-        // control._formState is current at call time, like the isSubmitted RHF's own onChange reads
-        if(! validateOnSubmit || control._formState.isSubmitted) {
+        // control._formState is current at call time, like the isSubmitted RHF's own onChange reads.
+        // After a submit, RHF's onChange already revalidates file inputs
+        if(control._formState.isSubmitted ? type !== 'file' : ! validateOnSubmit) {
             await trigger(name);
         }
     };

@@ -60,3 +60,17 @@ test.each(['preprocessor', 'preprocessors'] as const)('a checkbox %s receives th
     await user.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ agree: true }));
 });
+
+test('under validateOnSubmit a file change after a failed submit runs its validator once', async () => {
+    const user = userEvent.setup();
+    const validation = vi.fn((value: any) => (value && value.length > 0) || 'Required');
+    render(<Form fields={[{ name: 'avatar', type: 'file', label: 'Avatar', validation }]} validateOnSubmit onSubmit={vi.fn()} submitText="Send"/>);
+
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText('Required')).toBeTruthy();
+
+    validation.mockClear();
+    await user.upload(screen.getByLabelText('Avatar'), new File(['png'], 'x.png', { type: 'image/png' }));
+    await waitFor(() => expect(screen.queryByText('Required')).toBeNull());
+    expect(validation).toHaveBeenCalledTimes(1);
+});

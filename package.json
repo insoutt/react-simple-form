@@ -28,6 +28,10 @@
     "typescript"
   ],
   "author": "insoutt <elvis@betaksur.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insoutt/react-simple-form.git"
+  },
   "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",

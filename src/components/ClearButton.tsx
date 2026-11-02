@@ -16,8 +16,7 @@ const ClearButton = ({ className, onClick, children }: ClearButtonProps) => {
         const defaultValue = get(formState.defaultValues, name);
         const value = values[name];
         return typeof defaultValue === 'undefined'
-            ? !(value === undefined || value === null || value === false || value === ''
-                || (typeof FileList !== 'undefined' && value instanceof FileList && value.length === 0))
+            ? !(value === undefined || value === null || value === false || value.length === 0)
             : value !== defaultValue;
     });
 

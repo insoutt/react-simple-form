@@ -1,7 +1,7 @@
 import FormInput from './FormInput.js';
 import FormSelect from './FormSelect.js';
 import { type FieldValues, useFormContext } from 'react-hook-form';
-import { useContext, useEffect } from 'react';
+import { type JSX, useContext, useEffect } from 'react';
 import { cn } from '../utils/utils.js';
 import type { FieldProps } from '../utils/types.js';
 import { SimpleFormContext } from '../contexts/simple-form-context.js';

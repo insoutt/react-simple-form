@@ -1,7 +1,7 @@
 import { useFormContext, type FieldValues } from 'react-hook-form';
 import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
 import type { SelectProps } from '../utils/types.js';
-import { useContext, useState } from 'react';
+import { type JSX, useContext, useState } from 'react';
 import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const FormSelect = <T extends FieldValues>({

@@ -1,7 +1,7 @@
 import { useFormContext, type FieldValues } from 'react-hook-form';
 import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
 import type { InputProps } from '../utils/types.js';
-import { type ChangeEvent, useContext, useState } from 'react';
+import { type ChangeEvent, type JSX, useContext, useState } from 'react';
 import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const FormInput = <T extends FieldValues>({

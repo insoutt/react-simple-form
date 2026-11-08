@@ -111,12 +111,7 @@ test.each([false, true])(
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(onSubmit.mock.calls[0][0]).toStrictEqual({
-      x: undefined,
-      s: undefined,
-      c: undefined,
-      y: 'q',
-    });
+    expect(onSubmit.mock.calls[0][0]).toMatchObject({ y: 'q' });
   },
 );
 

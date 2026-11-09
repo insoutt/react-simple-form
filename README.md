@@ -19,7 +19,12 @@ npm install @insoutt/react-simple-form
 yarn add @insoutt/react-simple-form
 ```
 
-Peer dependencies: `react`, `react-dom`, `react-hook-form`.
+Peer dependencies:
+
+| Package              | Version                                     |
+| -------------------- | ------------------------------------------- |
+| `react`, `react-dom` | 18.2 or later, or 19                        |
+| `react-hook-form`    | 7.49.2 or later (7.52 or later on React 19) |
 
 ## Quick start
 
@@ -149,6 +154,8 @@ Attach it inline (`validation: required`) or register named validators on the fo
 ```
 
 If a `validation` string has no match in `validator`, the field is treated as valid and a warning is logged.
+
+Fields disabled through `props: { disabled: true }` skip validation and still submit their default value. Without a default, react-hook-form 7.54.2 or later submits the empty value (`''`, or `false` for a checkbox), and older versions submit `undefined`.
 
 ## Preprocessors
 

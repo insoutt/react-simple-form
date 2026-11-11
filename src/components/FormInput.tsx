@@ -1,7 +1,13 @@
 import { useFormContext, type FieldValues } from 'react-hook-form';
 import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
 import type { InputProps } from '../utils/types.js';
-import { type ChangeEvent, type JSX, useContext, useState } from 'react';
+import {
+  type ChangeEvent,
+  type JSX,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { SimpleFormContext } from '../contexts/simple-form-context.js';
 
 const FormInput = <T extends FieldValues>({
@@ -16,20 +22,38 @@ const FormInput = <T extends FieldValues>({
   children,
   preprocessor,
 }: InputProps<T>): JSX.Element => {
-  const { register, formState, setValue, trigger, control } = useFormContext();
-  const { isLoading, validator, validateOnSubmit, preprocessors } =
+  const { register, formState, setValue, trigger, control, getValues } =
+    useFormContext();
+  const { isLoading, validator, validateOnSubmit, preprocessors, resetCount } =
     useContext(SimpleFormContext);
   const [isValidating, setValidating] = useState(false);
+  // The last value that passed since the last Clear, -valid shows only while the field still holds it
+  const [passed, setPassed] = useState<{
+    value: unknown;
+    resetCount: number;
+  } | null>(null);
+  const latest = useRef<
+    { value: string | number; result: Promise<string | boolean> } | undefined
+  >(undefined);
 
   const validate = async (value: string | number) => {
     if (props?.disabled) return true;
     // RHF can call validate while another field renders, so set state after a microtask
     await Promise.resolve();
     setValidating(true);
-    const validationResponse = await parseValidation(
+    let call = {
       value,
-      validation,
-      validator,
+      result: parseValidation(value, validation, validator),
+    };
+    latest.current = call;
+    let validationResponse = await call.result;
+    // An older call returns the newest call's result, so RHF keeps it whichever resolves last
+    while (latest.current !== call) {
+      call = latest.current;
+      validationResponse = await call.result;
+    }
+    setPassed(
+      validationResponse === true ? { value: call.value, resetCount } : null,
     );
     setValidating(false);
     return validationResponse;
@@ -88,6 +112,9 @@ const FormInput = <T extends FieldValues>({
           formState,
           isValidating,
           validateOnSubmit,
+          isValidated:
+            passed?.resetCount === resetCount &&
+            Object.is(passed.value, getValues(name)),
           className,
         })}
         {...props}

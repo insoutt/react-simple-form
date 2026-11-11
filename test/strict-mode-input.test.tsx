@@ -36,7 +36,9 @@ test('a form with a text input first in StrictMode logs no cross-component updat
     </StrictMode>,
   );
 
-  await waitFor(() => expect(validation).toHaveBeenCalled());
+  // Validators no longer run at mount, which is when a field could update while another rendered
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  expect(validation).not.toHaveBeenCalled();
   await waitFor(() =>
     expect(screen.getByLabelText('Name').className).not.toContain('validating'),
   );

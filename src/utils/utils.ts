@@ -54,6 +54,7 @@ export function getFieldClassname<T extends FieldValues>(
     formState: FormState<T>;
     isValidating: boolean;
     validateOnSubmit: boolean;
+    isValidated?: boolean;
     className?: string;
   },
 ) {
@@ -72,10 +73,14 @@ export function getFieldClassname<T extends FieldValues>(
       options.isValidating ? `${classNameAux}-validating` : '',
     );
   }
+  // Reading formState.isValid would make RHF run every validator on each change and at mount
+  const isValidated = options.formState.isSubmitted || options.isValidated;
   return cn(
     classNameAux,
     options.formState.errors[name] && `${classNameAux}-error`,
     options.isValidating ? `${classNameAux}-validating` : '',
-    options.formState.isValid ? `${classNameAux}-valid` : '',
+    isValidated && !options.formState.errors[name]
+      ? `${classNameAux}-valid`
+      : '',
   );
 }

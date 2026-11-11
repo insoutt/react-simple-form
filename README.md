@@ -104,7 +104,7 @@ Each entry in `fields` is an input or a select.
     helpText: "With area code", // optional, rendered under the field
     validation: required,   // optional, function or named-validator string
     preprocessor: digitsOnly, // optional
-    props: { placeholder: "...", disabled: false }, // extra input props
+    props: { placeholder: "...", disabled: false }, // other <input> attributes (<select> ones on a select), except name, id, type, value, checked, onChange, onBlur and className, which the form sets
 }
 ```
 

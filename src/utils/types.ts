@@ -43,9 +43,10 @@ export interface FormClassNames {
 // End Form
 
 // FormField
-export type FieldValidator = (
-  value: Value,
-) => boolean | string | Promise<boolean | string>;
+// Method syntax keeps parameters bivariant, so the form-level validator record takes a validator declared for any field type
+export type FieldValidator<V = Value | boolean | FileList> = {
+  bivarianceHack(value: V): boolean | string | Promise<boolean | string>;
+}['bivarianceHack'];
 export type Preprocessor = (value: Value, selection: Selection) => Value;
 
 export type Selection = {
@@ -62,16 +63,36 @@ interface FieldBaseAttributes<T extends FieldValues> {
   groupClassName?: string;
   labelClassName?: string;
   children?: React.ReactElement;
-  validation?: string | FieldValidator;
   preprocessor?: Preprocessor;
 }
 
-interface FieldBaseProps {
-  placeholder?: string;
-  disabled?: boolean;
-}
+// Attributes the components set themselves are left out, the props spread would override them
+type ManagedAttributes =
+  | 'name'
+  | 'id'
+  | 'value'
+  | 'defaultValue'
+  | 'onChange'
+  | 'onBlur'
+  | 'className'
+  | 'children';
 
-type Fields<T extends FieldValues> = InputProps<T> | SelectProps<T>;
+type InputAttributes = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  ManagedAttributes | 'type' | 'checked' | 'defaultChecked'
+>;
+
+type SelectAttributes = Omit<
+  React.SelectHTMLAttributes<HTMLSelectElement>,
+  ManagedAttributes | 'multiple'
+> & {
+  // Kept from the previous props type, a select has no placeholder attribute
+  placeholder?: string;
+};
+
+// One member per input type, so `type` picks the value its validation receives
+type Fields<T extends FieldValues> =
+  { [K in InputType]: InputProps<T, K> }[InputType] | SelectProps<T>;
 
 export type FieldProps<T extends FieldValues> = Fields<T>;
 // End FormField
@@ -79,10 +100,18 @@ export type FieldProps<T extends FieldValues> = Fields<T>;
 // FormInput
 export interface InputProps<
   T extends FieldValues,
+  K extends InputType = InputType,
 > extends FieldBaseAttributes<T> {
-  type: InputType;
-  props?: FieldBaseProps;
+  type: K;
+  props?: InputAttributes;
+  validation?: string | FieldValidator<InputValue<K>>;
 }
+
+type InputValue<K extends InputType> = K extends 'checkbox'
+  ? boolean
+  : K extends 'file'
+    ? FileList
+    : Value;
 
 export type InputType =
   | 'text'
@@ -106,7 +135,8 @@ export type InputType =
 export type SelectProps<T extends FieldValues> = {
   type: 'select';
   options: SelectOption<T>[];
-  props?: FieldBaseProps;
+  props?: SelectAttributes;
+  validation?: string | FieldValidator<Value>;
   renderFields?: (field: FieldProps<T>) => React.ReactNode;
 } & FieldBaseAttributes<T>;
 

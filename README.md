@@ -402,6 +402,39 @@ export function ContactForm() {
 }
 ```
 
+### Uppercase input
+
+A preprocessor changes the value as the user types, so the field shows and submits the uppercased text.
+
+```tsx
+import { FieldProps, Form, Preprocessor } from '@insoutt/react-simple-form';
+
+interface IPassenger {
+  name: string;
+  passport: string;
+}
+
+const uppercase: Preprocessor = (value) => value.toString().toUpperCase();
+
+const fields: FieldProps<IPassenger>[] = [
+  { name: 'name', type: 'text', label: 'Name' },
+  {
+    name: 'passport',
+    type: 'text',
+    label: 'Passport number',
+    preprocessor: uppercase,
+  },
+];
+
+export function PassengerForm() {
+  const onSubmit = (values: IPassenger) => {
+    console.log(values.passport); // "AB123456" even when typed as "ab123456"
+  };
+
+  return <Form<IPassenger> fields={fields} onSubmit={onSubmit} />;
+}
+```
+
 ### Transform or cancel before submit
 
 `beforeSubmit` runs once validation passes. If it throws, the submit is cancelled and a warning is logged. `afterSubmit` receives the same values as `onSubmit`, so throw from `onSubmit` when the request fails to skip the success message.

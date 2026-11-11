@@ -47,7 +47,12 @@ export interface FormClassNames {
 export type FieldValidator<V = Value | boolean | FileList> = {
   bivarianceHack(value: V): boolean | string | Promise<boolean | string>;
 }['bivarianceHack'];
-export type Preprocessor = (value: Value, selection: Selection) => Value;
+export type PreprocessorResult =
+  Value | { value: Value; selection?: { from: number; end: number } };
+export type Preprocessor = (
+  value: Value,
+  selection: Selection,
+) => PreprocessorResult;
 
 export type Selection = {
   from: number | null;

@@ -186,6 +186,24 @@ Apply per field (`preprocessor: digitsOnly`) or form-wide keyed by field name:
 
 A field's own `preprocessor` takes precedence over the form-level `preprocessors` entry.
 
+When a preprocessor returns a plain value, the caret stays where it was, clamped to the new length. A mask that adds or removes characters before the caret can return `{ value, selection }` to place it:
+
+```ts
+import { Preprocessor } from '@insoutt/react-simple-form';
+
+const dashed: Preprocessor = (value, { from }) => {
+  const raw = value.toString();
+  const digits = raw.replace(/\D/g, '');
+  const before = raw.slice(0, from ?? raw.length).replace(/\D/g, '').length;
+  const caret = before + (before > 2 ? 1 : 0);
+  return {
+    value:
+      digits.length > 2 ? `${digits.slice(0, 2)}-${digits.slice(2)}` : digits,
+    selection: { from: caret, end: caret },
+  };
+};
+```
+
 Preprocessors don't apply to checkboxes, which store their checked boolean as-is.
 
 ## Styling

@@ -1,6 +1,6 @@
 import { useFormContext, type FieldValues } from 'react-hook-form';
 import { cn, getFieldClassname, parseValidation } from '../utils/utils.js';
-import type { InputProps } from '../utils/types.js';
+import type { InputProps, PreprocessorResult } from '../utils/types.js';
 import {
   type ChangeEvent,
   type JSX,
@@ -66,10 +66,11 @@ const FormInput = <T extends FieldValues>({
     let auxValue: string | number | boolean =
       type === 'checkbox' ? checked : value;
 
+    let processed: PreprocessorResult | undefined;
     if (type === 'checkbox') {
       // Preprocessors take and return string | number, a checkbox stores its checked boolean as-is
     } else if (typeof preprocessor === 'function') {
-      auxValue = preprocessor(value, {
+      processed = preprocessor(value, {
         from: event.target.selectionStart,
         end: event.target.selectionEnd,
       });
@@ -77,17 +78,36 @@ const FormInput = <T extends FieldValues>({
       typeof preprocessors !== 'undefined' &&
       typeof preprocessors[name] === 'function'
     ) {
-      auxValue = preprocessors[name]!(value, {
+      processed = preprocessors[name]!(value, {
         from: event.target.selectionStart,
         end: event.target.selectionEnd,
       });
+    }
+    let selection: { from: number; end: number } | undefined;
+    if (typeof processed === 'object') {
+      auxValue = processed.value;
+      selection = processed.selection;
+    } else if (processed !== undefined) {
+      auxValue = processed;
     }
 
     if (type === 'file') {
       // setValue would clear the file selection, RHF's onChange stores `files` instead
       await onChange(event);
     } else {
+      const { selectionStart, selectionEnd } = event.target;
       setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
+      // Rewriting the DOM value moves the caret to the end; selectionStart is null on types without selection support
+      if (
+        (selection || auxValue !== value) &&
+        selectionStart !== null &&
+        document.activeElement === event.target
+      ) {
+        const len = String(auxValue).length;
+        const from = selection?.from ?? selectionStart;
+        const end = selection?.end ?? selectionEnd ?? selectionStart;
+        event.target.setSelectionRange(Math.min(from, len), Math.min(end, len));
+      }
     }
     // control._formState is current at call time, like the isSubmitted RHF's own onChange reads.
     // After a submit, RHF's onChange already revalidates file inputs

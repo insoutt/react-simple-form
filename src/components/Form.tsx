@@ -4,6 +4,7 @@ import {
   FormProvider,
   type FieldValues,
 } from 'react-hook-form';
+import { useState } from 'react';
 import FormField from './FormField.js';
 import ClearButton from './ClearButton.js';
 import type { FormProps } from '../utils/types.js';
@@ -34,6 +35,8 @@ const Form = <T extends FieldValues>({
   const methods = useForm<T>({
     defaultValues,
   });
+  // Fields compare the reset count to forget validations from before a Clear
+  const [resetCount, setResetCount] = useState(0);
 
   const { isSubmitting } = methods.formState;
   const isFormBusy = isLoading || isSubmitting;
@@ -69,6 +72,7 @@ const Form = <T extends FieldValues>({
 
   const clear = () => {
     methods.reset();
+    setResetCount((count) => count + 1);
     onClear?.();
   };
 
@@ -80,6 +84,7 @@ const Form = <T extends FieldValues>({
         validator,
         classNames,
         preprocessors,
+        resetCount,
       }}
     >
       <FormProvider {...methods}>

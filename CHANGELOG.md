@@ -1,5 +1,18 @@
 # @insoutt/react-simple-form
 
+## 2.2.0
+
+### Minor Changes
+
+- 4d6f459: Reset the form when `defaultValues` change, stop running validators for other fields, validate selects on change, and type validators and field `props` by field type.
+
+  - When `defaultValues` change after the form mounts, for example once an edit form's data has loaded, the form now resets to the new values and Clear restores them. A field the new values leave out becomes empty, and its edits are dropped. Previously the new values were ignored unless the form was remounted with a `key`. The form remounts to apply them, so the inputs and any components rendered through `children` start fresh. A change that arrives while a submit is running, for example from `onSubmit`, is applied once every submit in flight has finished. A `defaultValues` object re-created on every render with the same values does not reset the form.
+  - The `-valid` class now reflects the field, not the whole form: a field has it while its current value is one its validator passed, or after a submit if it has no error. No field has it when the form loads or after Clear until it is validated again, and focusing and leaving a field does not add it. In exchange, a change now runs only that field's validator, once (an input's ran twice, plus every other field's validator), and validators no longer run when the form loads. With `validateOnSubmit`, `-valid` still never appears.
+  - A `select` is now validated when it changes, like an input: its error and `-valid` show right after the change instead of only after a submit. With `validateOnSubmit`, a select change still shows no error before the first submit.
+  - When an async validator's results arrive out of order, a field that stays mounted and enabled now ends with the result for the value it was last validated with, normally its current value. Previously a slower result for an older value could replace it, for example clearing the error of an invalid value, and the `-validating` class ended as soon as any one result arrived instead of the current value's.
+  - A field's `validation` is now typed by the field's `type`: a `checkbox` validator receives a `boolean`, a `file` validator a `FileList`, and every other input and `select` a `string | number`, so `validation: (value) => ...` gets the right type. A validator declared as `(value: string | number) => ...` on a `checkbox` or `file` field no longer compiles: at runtime it always received a `boolean` or a `FileList`, so it was checking the wrong thing. The form-level `validator` record still takes validators of any of these types.
+  - A field's `props` now accepts any `<input>` attribute (`<select>` attribute for a select), except the ones the form sets itself: `name`, `id`, `type`, `value`, `defaultValue`, `checked`, `defaultChecked`, `onChange`, `onBlur`, `className` and `children`, plus `multiple` on a select. Previously it accepted only `placeholder` and `disabled`.
+
 ## 2.1.0
 
 ### Minor Changes

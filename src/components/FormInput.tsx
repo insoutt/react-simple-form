@@ -87,7 +87,20 @@ const FormInput = <T extends FieldValues>({
       // setValue would clear the file selection, RHF's onChange stores `files` instead
       await onChange(event);
     } else {
+      const { selectionStart, selectionEnd } = event.target;
       setValue(name, auxValue, { shouldDirty: true, shouldTouch: true });
+      // Rewriting the DOM value moves the caret to the end; selectionStart is null on types without selection support
+      if (
+        auxValue !== value &&
+        selectionStart !== null &&
+        document.activeElement === event.target
+      ) {
+        const len = String(auxValue).length;
+        event.target.setSelectionRange(
+          Math.min(selectionStart, len),
+          Math.min(selectionEnd ?? selectionStart, len),
+        );
+      }
     }
     // control._formState is current at call time, like the isSubmitted RHF's own onChange reads.
     // After a submit, RHF's onChange already revalidates file inputs
